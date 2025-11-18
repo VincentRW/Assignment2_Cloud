@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: #fff;
+  color: #222;
+}
+[data-theme="dark"] {
+  background: #222;
+  color: #eee;
+}
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+button, input, textarea {
+  font-size: 1em;
+}
+input:focus, button:focus, textarea:focus {
+  outline: 2px solid #005fcc;
+}

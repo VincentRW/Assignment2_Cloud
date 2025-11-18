@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model TabOutput {
+  id            Int      @id @default(autoincrement())
+  title         String
+  htmlCode      String
+  studentNumber String
+  createdAt     DateTime @default(now())
+}
+
+model EscapeRoomAttempt {
+  id              Int      @id @default(autoincrement())
+  playerName      String
+  timeLeft        Int
+  completed       Boolean  @default(false)
+  stagesCompleted Int
+  studentNumber   String
+  createdAt       DateTime @default(now())
+}

@@ -1,0 +1,27 @@
+{
+  "name": "assignment_1",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5",
+    "next": "15.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.56.1",
+    "@vitest/ui": "^4.0.10",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "vitest": "^4.0.10"
+  }
+}
