@@ -12,6 +12,7 @@ export default function EscapeRoom() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function EscapeRoom() {
     }
   }, [timeLeft, isCompleted, currentStage]);
 
-  const stages = [
+const stages = [
     {
       title: "🔒 Stage 1: Unlock the Door - Fix Code Formatting",
       description: "The door is locked behind poorly formatted code. Fix the formatting to proceed:",
@@ -35,33 +36,34 @@ export default function EscapeRoom() {
       hint: "Add proper spacing after commas, indentation with 2 spaces, and line breaks",
       type: "format"
     },
-    {
-      title: "🔢 Stage 2: Crack the Safe - Generate Number Sequence",
-      description: "The safe requires a sequence of numbers from 0 to 1000. Write the code:",
-      expected: "0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100...1000",
-      hint: "Use a for loop from 0 to 1000 and concatenate numbers as strings",
+     {
+      title: "🔢 Stage 2: Calculate the Sum",
+      description: "Calculate the sum of numbers from 1 to 100:",
+      expected: `let sum = 0;\nfor (let i = 1; i <= 100; i++) {\n  sum += i;\n}\nsum`,
+      hint: "Use a for loop from 1 to 100 and add each number to a sum variable",
       type: "generate"
     },
     {
-      title: "💾 Stage 3: Decrypt the Files - Data Transformation",
-      description: "Transform this CSV data into JSON format to decrypt the files:",
-      code: `name,age,city\nJohn,25,New York\nJane,30,London\nBob,35,Tokyo`,
-      expected: `[\n  {"name":"John","age":"25","city":"New York"},\n  {"name":"Jane","age":"30","city":"London"},\n  {"name":"Bob","age":"35","city":"Tokyo"}\n]`,
-      hint: "Split by newlines, then by commas. First line is headers, rest are values",
-      type: "transform"
-    },
-    {
-      title: "🐛 Stage 4: Debug the Security System",
-      description: "The security system has bugs. Find and click the bug in the code to proceed:",
-      code: `function calculateTotal(items) {\n  let total = 0;\n  for (let i = 0; i <= items.length; i++) {\n    total += items[i].price;\n  }\n  return total;\n}`,
-      type: "debug",
-      bugPosition: { line: 3, character: 25 } // The '=' should be '<'
-    }
+  title: "💾 Stage 3: Create Greeting Function",
+  description: "Write a function that returns a greeting message:",
+  expected: `function greet(name) {\n  return "Hello, " + name + "!";\n}`,
+  hint: "Create a function that takes a name parameter and returns a greeting string",
+  type: "transform"
+},
+   {
+  title: "🐛 Stage 4: Fix Number Check",
+  description: "This code should check if a number is positive. Fix it:",
+  code: `function isPositive(num) {\n  if (num = 0) {\n    return false;\n  }\n  return num > 0;\n}`,
+  expected: `function isPositive(num) {\n  if (num === 0) {\n    return false;\n  }\n  return num > 0;\n}`,
+  hint: "Check the comparison operator in the if statement",
+  type: "format"
+}
   ];
 
   const saveAttempt = async (completed, stagesCompleted, timeRemaining) => {
+    setIsSaving(true);
     try {
-      await fetch('/api/escape-room/save-attempt', {
+      const response = await fetch('/api/escape-room/save-attempt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -72,9 +74,25 @@ export default function EscapeRoom() {
           studentNumber
         }),
       });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setMessage("✅ Game progress saved to database!");
+      } else {
+        setMessage("❌ Failed to save progress to database");
+      }
     } catch (error) {
       console.error('Failed to save attempt:', error);
+      setMessage("❌ Network error - failed to save progress");
+    } finally {
+      setIsSaving(false);
     }
+  };
+
+  // NEW: Manual save button handler
+  const handleManualSave = () => {
+    saveAttempt(isCompleted, currentStage, timeLeft);
   };
 
   const checkSolution = () => {
@@ -101,6 +119,8 @@ export default function EscapeRoom() {
         setShowHint(false);
         setAttempts(0);
         setMessage(`✅ Correct! Door unlocked! Moving to Stage ${currentStage + 2}...`);
+        // Auto-save on stage completion
+        saveAttempt(false, currentStage + 1, timeLeft);
       }
     } else {
       setMessage("❌ Incorrect solution. The door remains locked. Try again!");
@@ -116,6 +136,8 @@ export default function EscapeRoom() {
       setCurrentStage(prev => prev + 1);
       setCodeInput('');
       setMessage(`✅ Bug found! Security system disabled. Moving to next stage...`);
+      // Auto-save on stage completion
+      saveAttempt(false, currentStage + 1, timeLeft);
     } else {
       setMessage("❌ That's not the bug! Keep looking...");
     }
@@ -135,6 +157,8 @@ export default function EscapeRoom() {
     setIsCompleted(false);
     setShowHint(false);
     setAttempts(0);
+    // Save reset state
+    saveAttempt(false, 0, 1800);
   };
 
   const currentStageData = stages[currentStage];
@@ -168,7 +192,7 @@ export default function EscapeRoom() {
             </p>
           </div>
 
-          {/* Status Bar */}
+          {/* Status Bar - UPDATED WITH SAVE BUTTON */}
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between',
@@ -188,19 +212,38 @@ export default function EscapeRoom() {
             <div style={{ fontSize: '1.2rem' }}>
               🔄 <strong>Attempts:</strong> {attempts}
             </div>
-            <button 
-              onClick={resetGame}
-              style={{
-                padding: '8px 16px',
-                background: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.3)',
-                borderRadius: 5,
-                cursor: 'pointer'
-              }}
-            >
-              🔄 Restart
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {/* NEW SAVE BUTTON */}
+              <button 
+                onClick={handleManualSave}
+                disabled={isSaving}
+                style={{
+                  padding: '8px 16px',
+                  background: isSaving ? '#666' : '#27ae60',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 5,
+                  cursor: isSaving ? 'not-allowed' : 'pointer',
+                  opacity: isSaving ? 0.7 : 1
+                }}
+              >
+                {isSaving ? '💾 Saving...' : '💾 Save Progress'}
+              </button>
+              
+              <button 
+                onClick={resetGame}
+                style={{
+                  padding: '8px 16px',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: 5,
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 Restart
+              </button>
+            </div>
           </div>
 
           {/* Game Content */}
@@ -217,20 +260,37 @@ export default function EscapeRoom() {
               <p style={{ fontSize: '1.2rem', marginBottom: 25 }}>
                 You completed all challenges with {formatTime(timeLeft)} remaining!
               </p>
-              <button 
-                onClick={resetGame}
-                style={{
-                  padding: '12px 30px',
-                  background: '#2ecc71',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontSize: '1.1rem',
-                  cursor: 'pointer'
-                }}
-              >
-                Play Again
-              </button>
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                <button 
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  style={{
+                    padding: '12px 25px',
+                    background: isSaving ? '#666' : '#27ae60',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '1.1rem',
+                    cursor: isSaving ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isSaving ? '💾 Saving...' : '💾 Save Result'}
+                </button>
+                <button 
+                  onClick={resetGame}
+                  style={{
+                    padding: '12px 30px',
+                    background: '#2ecc71',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '1.1rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Play Again
+                </button>
+              </div>
             </div>
           ) : timeLeft === 0 ? (
             <div style={{ 
@@ -245,20 +305,37 @@ export default function EscapeRoom() {
               <p style={{ fontSize: '1.2rem', marginBottom: 25 }}>
                 The room remains locked. Better luck next time!
               </p>
-              <button 
-                onClick={resetGame}
-                style={{
-                  padding: '12px 30px',
-                  background: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontSize: '1.1rem',
-                  cursor: 'pointer'
-                }}
-              >
-                Try Again
-              </button>
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                <button 
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  style={{
+                    padding: '12px 25px',
+                    background: isSaving ? '#666' : '#27ae60',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '1.1rem',
+                    cursor: isSaving ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {isSaving ? '💾 Saving...' : '💾 Save Attempt'}
+                </button>
+                <button 
+                  onClick={resetGame}
+                  style={{
+                    padding: '12px 30px',
+                    background: '#e74c3c',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '1.1rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Try Again
+                </button>
+              </div>
             </div>
           ) : (
             <div style={{ 
@@ -347,7 +424,7 @@ export default function EscapeRoom() {
                 </div>
               )}
 
-              {/* Buttons */}
+              {/* Buttons - UPDATED WITH SAVE BUTTON */}
               <div style={{ display: 'flex', gap: 15, flexWrap: 'wrap' }}>
                 {currentStageData.type !== 'debug' && (
                   <button 
@@ -380,6 +457,23 @@ export default function EscapeRoom() {
                   }}
                 >
                   💡 {showHint ? 'Hide Hint' : 'Show Hint'}
+                </button>
+
+                {/* NEW MANUAL SAVE BUTTON */}
+                <button 
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  style={{
+                    padding: '12px 25px',
+                    background: isSaving ? '#666' : '#27ae60',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 8,
+                    cursor: isSaving ? 'not-allowed' : 'pointer',
+                    fontSize: '1rem'
+                  }}
+                >
+                  {isSaving ? '💾 Saving...' : '💾 Save Game'}
                 </button>
               </div>
 

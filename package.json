@@ -4,24 +4,36 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build --turbopack --no-lint",
     "start": "next start",
     "lint": "eslint",
+    "lighthouse": "npx lighthouse http://localhost:3000/escape_room --output html --view",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:all": "npm run test:playwright && npm run lighthouse",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:playwright": "npx playwright test"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "js-cookie": "^3.0.5",
     "next": "15.5.4",
+    "prisma": "^6.19.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@jest/globals": "^30.2.0",
     "@playwright/test": "^1.56.1",
+    "@types/jest": "^30.0.0",
     "@vitest/ui": "^4.0.10",
+    "chrome-launcher": "^1.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "jest": "^30.2.0",
+    "lighthouse": "^12.8.2",
+    "ts-jest": "^29.4.5",
     "vitest": "^4.0.10"
   }
 }
