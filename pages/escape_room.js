@@ -170,7 +170,7 @@ const stages = [
       <main style={{ 
         padding: '20px',
         minHeight: '80vh',
-        background: 'linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url("/escape-room-bg.jpg")',
+        background: 'url("background_escape.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: 'white'
