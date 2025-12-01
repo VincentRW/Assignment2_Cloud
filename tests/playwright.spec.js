@@ -8,5 +8,4 @@ test('escape room gameplay', async ({ page }) => {
 
 test('html generation', async ({ page }) => {
   await page.goto('http://localhost:3000');
-  // Test tab functionality and HTML output
 });

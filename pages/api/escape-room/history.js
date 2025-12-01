@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       const attempts = await prisma.escapeRoomAttempt.findMany({
         where: { studentNumber },
         orderBy: { createdAt: 'desc' },
-        take: 10 // Last 10 attempts
+        take: 10 
       });
       
       res.status(200).json({ success: true, data: attempts });

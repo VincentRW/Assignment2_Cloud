@@ -1,4 +1,3 @@
-// tests/game-flow.spec.ts
 import { test, expect } from '@playwright/test';
 
 test('Complete Stage 1 successfully', async ({ page }) => {
@@ -7,7 +6,6 @@ test('Complete Stage 1 successfully', async ({ page }) => {
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
 
-  // Fill the correct answer for Stage 1
   const textarea = page.locator('textarea');
   const correctAnswer = `function addNumbers(a, b) {
   return a + b;
@@ -18,12 +16,10 @@ console.log(addNumbers(5, 10));`;
   await textarea.fill(correctAnswer);
   console.log('✅ Correct answer entered for Stage 1');
 
-  // Submit the solution
   const submitButton = page.getByRole('button', { name: /🚀 Submit Solution/i });
   await submitButton.click();
   console.log('✅ Submit button clicked');
 
-  // Should show success message and move to next stage
   await expect(page.getByText(/✅ Correct! Door unlocked!/i)).toBeVisible();
   console.log('✅ Success message shown');
   
@@ -39,12 +35,10 @@ test('Test save functionality', async ({ page }) => {
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
 
-  // Test the save button
   const saveButton = page.getByRole('button', { name: /💾 Save Progress/i });
   await saveButton.click();
   console.log('✅ Save button clicked');
 
-  // Check for save confirmation message
   try {
     await expect(page.getByText(/✅ Game progress saved/i)).toBeVisible({ timeout: 5000 });
     console.log('✅ Save confirmation message shown');

@@ -1,4 +1,3 @@
-// scripts/lighthouse-report.js
 const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
@@ -8,10 +7,8 @@ async function generateReport() {
   const options = {logLevel: 'info', output: 'html', onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'], port: chrome.port};
   const runnerResult = await lighthouse('http://localhost:3000/escape_room', options);
 
-  // Save HTML report
   fs.writeFileSync('lighthouse-report.html', runnerResult.report);
 
-  // Log scores
   console.log('🏆 Lighthouse Scores:');
   console.log('Performance:', runnerResult.lhr.categories.performance.score * 100);
   console.log('Accessibility:', runnerResult.lhr.categories.accessibility.score * 100);

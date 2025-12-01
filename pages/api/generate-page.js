@@ -3,7 +3,6 @@ export default async function handler(req, res) {
     try {
       const { title, content, style = 'default' } = req.body;
       
-      // Dynamic HTML generation based on style
       let html = '';
       
       switch (style) {

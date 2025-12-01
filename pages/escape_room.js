@@ -6,7 +6,7 @@ export default function EscapeRoom() {
   const studentNumber = "225";
   const studentName = "Vincent Ryan Wirnata";
   const [currentStage, setCurrentStage] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes
+  const [timeLeft, setTimeLeft] = useState(1800); 
   const [codeInput, setCodeInput] = useState('');
   const [message, setMessage] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
@@ -14,7 +14,6 @@ export default function EscapeRoom() {
   const [attempts, setAttempts] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Timer effect
   useEffect(() => {
     if (timeLeft > 0 && !isCompleted) {
       const timer = setInterval(() => {
@@ -90,7 +89,6 @@ const stages = [
     }
   };
 
-  // NEW: Manual save button handler
   const handleManualSave = () => {
     saveAttempt(isCompleted, currentStage, timeLeft);
   };
@@ -104,7 +102,6 @@ const stages = [
       return;
     }
 
-    // Normalize for comparison
     const normalizedInput = codeInput.trim().replace(/\s+/g, ' ');
     const normalizedExpected = currentStageData.expected?.trim().replace(/\s+/g, ' ') || '';
     
@@ -119,7 +116,6 @@ const stages = [
         setShowHint(false);
         setAttempts(0);
         setMessage(`✅ Correct! Door unlocked! Moving to Stage ${currentStage + 2}...`);
-        // Auto-save on stage completion
         saveAttempt(false, currentStage + 1, timeLeft);
       }
     } else {
@@ -136,7 +132,6 @@ const stages = [
       setCurrentStage(prev => prev + 1);
       setCodeInput('');
       setMessage(`✅ Bug found! Security system disabled. Moving to next stage...`);
-      // Auto-save on stage completion
       saveAttempt(false, currentStage + 1, timeLeft);
     } else {
       setMessage("❌ That's not the bug! Keep looking...");
@@ -157,7 +152,6 @@ const stages = [
     setIsCompleted(false);
     setShowHint(false);
     setAttempts(0);
-    // Save reset state
     saveAttempt(false, 0, 1800);
   };
 
@@ -176,7 +170,6 @@ const stages = [
         color: 'white'
       }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          {/* Header Section */}
           <div style={{ textAlign: 'center', marginBottom: 30 }}>
             <h1 style={{ 
               fontSize: '2.5rem', 
@@ -192,7 +185,6 @@ const stages = [
             </p>
           </div>
 
-          {/* Status Bar - UPDATED WITH SAVE BUTTON */}
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between',
@@ -213,7 +205,6 @@ const stages = [
               🔄 <strong>Attempts:</strong> {attempts}
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              {/* NEW SAVE BUTTON */}
               <button 
                 onClick={handleManualSave}
                 disabled={isSaving}
@@ -246,7 +237,6 @@ const stages = [
             </div>
           </div>
 
-          {/* Game Content */}
           {isCompleted ? (
             <div style={{ 
               textAlign: 'center',
@@ -344,7 +334,6 @@ const stages = [
               borderRadius: 15,
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              {/* Current Stage Header */}
               <div style={{ marginBottom: 25 }}>
                 <h2 style={{ 
                   fontSize: '1.5rem', 
@@ -358,7 +347,6 @@ const stages = [
                 </p>
               </div>
 
-              {/* Code Display - Interactive for debug stage */}
               {currentStageData.code && (
                 <div style={{ marginBottom: 25 }}>
                   <h3 style={{ marginBottom: 10, color: '#ff6b6b' }}>
@@ -424,7 +412,6 @@ const stages = [
                 </div>
               )}
 
-              {/* Buttons - UPDATED WITH SAVE BUTTON */}
               <div style={{ display: 'flex', gap: 15, flexWrap: 'wrap' }}>
                 {currentStageData.type !== 'debug' && (
                   <button 
@@ -459,7 +446,6 @@ const stages = [
                   💡 {showHint ? 'Hide Hint' : 'Show Hint'}
                 </button>
 
-                {/* NEW MANUAL SAVE BUTTON */}
                 <button 
                   onClick={handleManualSave}
                   disabled={isSaving}
@@ -477,7 +463,6 @@ const stages = [
                 </button>
               </div>
 
-              {/* Hint */}
               {showHint && (
                 <div style={{ 
                   marginTop: 20,
@@ -490,7 +475,6 @@ const stages = [
                 </div>
               )}
 
-              {/* Message */}
               {message && (
                 <div style={{ 
                   marginTop: 20,

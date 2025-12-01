@@ -1,4 +1,3 @@
-// tests/escape-room-load.spec.ts
 import { test, expect } from '@playwright/test';
 
 test('Escape Room main page loads', async ({ page }) => {
@@ -6,15 +5,13 @@ test('Escape Room main page loads', async ({ page }) => {
   
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded successfully');
-  
-  // Check main header and title
+
   await expect(page.getByText(/🚪 ESCAPE ROOM CHALLENGE/i)).toBeVisible();
   console.log('✅ Main header visible');
   
   await expect(page.getByText(/Code your way out!/i)).toBeVisible();
   console.log('✅ Subtitle visible');
   
-  // Check status bar elements
   await expect(page.getByText(/Time:/i)).toBeVisible();
   console.log('✅ Timer visible');
   
@@ -27,28 +24,24 @@ test('Escape Room main page loads', async ({ page }) => {
   await expect(page.getByRole('button', { name: /🔄 Restart/i })).toBeVisible();
   console.log('✅ Restart button visible');
   
-  // Check for current stage content (Stage 1)
   await expect(page.getByText(/🔒 Stage 1: Unlock the Door - Fix Code Formatting/i)).toBeVisible();
   console.log('✅ Stage 1 title visible');
   
   await expect(page.getByText(/The door is locked behind poorly formatted code/i)).toBeVisible();
   console.log('✅ Stage 1 description visible');
   
-  // Check for code display
   await expect(page.getByText(/function addNumbers/i)).toBeVisible();
   console.log('✅ Code example visible');
   
   await expect(page.getByText(/console.log/i)).toBeVisible();
   console.log('✅ Console log visible');
   
-  // Check for buttons that exist in your page
   await expect(page.getByRole('button', { name: /🚀 Submit Solution/i })).toBeVisible();
   console.log('✅ Submit button visible');
   
   await expect(page.getByRole('button', { name: /💡 Show Hint/i })).toBeVisible();
   console.log('✅ Hint button visible');
   
-  // Check for textarea input
   await expect(page.locator('textarea')).toBeVisible();
   console.log('✅ Textarea input visible');
   
@@ -61,19 +54,16 @@ test('Escape Room game functionality works', async ({ page }) => {
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
   
-  // Test the textarea input
   const textarea = page.locator('textarea');
   await textarea.fill('test input');
   await expect(textarea).toHaveValue('test input');
   console.log('✅ Textarea accepts input');
   
-  // Test hint functionality - just show it once
   const hintButton = page.getByRole('button', { name: /💡 Show Hint/i });
   await hintButton.click();
   await expect(page.getByText(/💡 Hint:/i)).toBeVisible();
   console.log('✅ Hint shows when clicked');
   
-  // Don't try to hide it - just leave it visible
   console.log('✅ Hint functionality works!');
   
   console.log('🎉 All interactive elements work!');
@@ -85,21 +75,17 @@ test('Escape Room restart functionality', async ({ page }) => {
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
   
-  // Fill some text to prove reset works
   const textarea = page.locator('textarea');
   await textarea.fill('test code');
   await expect(textarea).toHaveValue('test code');
   console.log('✅ Textarea filled with test code');
   
-  // Test restart button
   const restartButton = page.getByRole('button', { name: /🔄 Restart/i });
   await restartButton.click();
   console.log('✅ Restart button clicked');
   
-  // Wait for the reset to complete
   await page.waitForTimeout(500);
-  
-  // Check that textarea is cleared after restart
+
   await expect(textarea).toHaveValue('');
   console.log('✅ Textarea cleared after restart');
   
@@ -111,8 +97,7 @@ test('Complete Stage 1 successfully', async ({ page }) => {
   
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
-  
-  // Fill the correct answer for Stage 1
+
   const textarea = page.locator('textarea');
   const correctAnswer = `function addNumbers(a, b) {
   return a + b;
@@ -122,13 +107,11 @@ console.log(addNumbers(5, 10));`;
   
   await textarea.fill(correctAnswer);
   console.log('✅ Correct answer entered');
-  
-  // Submit the solution
+
   const submitButton = page.getByRole('button', { name: /🚀 Submit Solution/i });
   await submitButton.click();
   console.log('✅ Submit button clicked');
-  
-  // Should show success message and move to next stage
+
   await expect(page.getByText(/✅ Correct! Door unlocked!/i)).toBeVisible();
   console.log('✅ Success message shown');
   
@@ -143,13 +126,11 @@ test('Save game functionality', async ({ page }) => {
   
   await page.goto('http://localhost:3000/escape_room');
   console.log('✅ Page loaded');
-  
-  // Test the save button
+
   const saveButton = page.getByRole('button', { name: /💾 Save Progress/i });
   await saveButton.click();
   console.log('✅ Save button clicked');
-  
-  // Check for save confirmation message (with timeout in case it takes a moment)
+
   try {
     await expect(page.getByText(/✅ Game progress saved/i)).toBeVisible({ timeout: 5000 });
     console.log('✅ Save confirmation message shown');
